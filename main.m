@@ -1,9 +1,27 @@
-A = rand(10,10);
+addpath(genpath('./test/'))
+
+% % Get google web links weighted graph
+% file = 'Data/web-Stanford.txt';
+% A = data_preprocess(file);
+
+
+
+
+
+
+
+%% Tests on Execution time
+
+% execution time of different QR decomp approaches(Fixed: QR algorithm: Pure QR; Iteration time: 500)
+test_time1()
+%%
+
+% A = rand(10,10);
 
 % Calculate eigenvalues using Pure QR algorithm
-eig = pure_qr(A, 500);
+% eig = pure_qr(A, 500);
 
-hess = hessenberg(A);
+% hess = hessenberg(A);
 
 % Eigenvalue test
 % eigentest();

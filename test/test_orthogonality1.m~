@@ -1,0 +1,114 @@
+% Comparison of orthogonality of Q matrix for different QR decomp approaches(Fixed: QR algorithm: Pure QR; Fixed matrix size Iteration time: 500)
+function test_orthogonality1()
+s = zeros(1,500);
+t1 = zeros(1,500);
+t2 = zeros(1,500);
+t3 = zeros(1,500);
+n_iter = 500;
+A0 = rand(10,10);
+% [~,n] = size(A0);
+I = eye(size(A0));
+format long
+% 
+%% HH
+A = A0;
+for i=1:n_iter
+    [Q,R] = houseqr(A);
+%     disp(Q'*Q-I);
+    ortherr_hh = norm(Q'*Q-I,inf);
+%     disp(ortherr_hh);
+    t1(i) = ortherr_hh;
+	A = R * Q;
+    s(i) = i;
+end
+%% Givens
+A = A0;
+for i=1:n_iter
+    [Q,R] = givensqr(A);
+    ortherr_givens = norm(Q'*Q-I,inf);
+    t2(i) = ortherr_givens;
+	A = R * Q;
+end
+
+%% mgs
+A = A0;
+for i=1:n_iter
+    [Q,R] = mgsqr(A);
+    ortherr_mgs = norm(Q'*Q-I,inf);
+    t3(i) = ortherr_mgs;
+	A = R * Q;
+end
+
+
+figure
+ax1 = subplot(1,3,1);
+p1 = plot(s,t1,'LineWidth',1);
+ax1.XGrid = 'on';
+ax1.YGrid = 'on';
+p1.Marker = 'o';
+title('Householder QR');
+ylabel('Time (sec)');
+xlabel('Number of Iterations');
+
+ax2 = subplot(1,3,2);
+p2 = plot(s,t2,'r','LineWidth',1);
+ax2.XGrid = 'on';
+ax2.YGrid = 'on';
+p2.Marker = 'o';
+title('Givens QR');
+ylabel('Time (sec)');
+xlabel('Number of Iterations');
+
+ax3 = subplot(1,3,3);
+p3 = plot(s,t3,'g','LineWidth',1);
+ax3.XGrid = 'on';
+ax3.YGrid = 'on';
+p3.Marker = 'o';
+title('Modifier Gram-Schmit');
+ylabel('Time (sec)');
+xlabel('Number of Iterations');
+print('Runtime Difference Across QR Decomposition', '-depsc');
+
+end
+
+
+
+% 
+% 
+% % compare(X)
+% % Compare three QR decompositions,
+% %
+% I = eye(size(X));
+% 
+% %% Classic Gram Schmidt
+% [Q,R] = gs(X);
+% qrerr_gs = norm(Q*R-X,inf)/norm(X,inf);
+% ortherr_gs = norm(Q'*Q-I,inf);
+% 
+% %% Modified Gram Schmidt
+% [Q,R] = mgs(X);
+% qrerr_mgs = norm(Q*R-X,inf)/norm(X,inf);
+% ortherr_mgs = norm(Q'*Q-I,inf);
+% 
+% %% Householder QR Decomposition
+% [U,R] = hqrd(X);
+% QR = R;
+% E = I;
+% for k = size(X,2):-1:1
+%     uk = U(:,k);
+%     QR = QR - uk*(uk'*QR);
+%     E = E - uk*(uk'*E) - (E*uk)*uk' + uk*(uk'*E*uk)*uk';
+% end
+% qrerr_h = norm(QR-X,inf)/norm(X,inf);
+% ortherr_h = norm(E-I,inf);
+% 
+% %% Report results 
+% fprintf('QR error\n')
+% fprintf('Classic:     %10.3e\n',qrerr_gs)
+% fprintf('Modified:    %10.3e\n',qrerr_mgs)
+% fprintf('Householder: %10.3e\n',qrerr_h)
+% fprintf('\n')
+% fprintf('Orthogonality error\n')
+% fprintf('Classic:     %10.3e\n',ortherr_gs)
+% fprintf('Modified:    %10.3e\n',ortherr_mgs)
+% fprintf('Householder: %10.3e\n',ortherr_h)
